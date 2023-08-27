@@ -9,17 +9,21 @@ on:
 
 # Global version
 env:
-  VERSION: ${{ github.ref_name }}-${{ github.run_id }}
+  VERSION: ${{ github.ref_name }}
   REPO_URI: ${{ github.server_url }}/${{ github.repository }}
 
 jobs:
   arduino-samd-package:
     runs-on: ubuntu-latest
-
+    env:
+      BUILD: "${{ github.repository_owner }}-samd-ard-${{ env.VERSION }}"
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          repository: arduino/ArduinoCore-samd
+          path: ${{ env.BUILD }}
 
       - name: Debug
         run: |
-          ls -alhF .github/workflows
+          ls -alhF
