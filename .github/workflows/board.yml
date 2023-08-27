@@ -4,8 +4,8 @@ name: "Multi-Board-Builder"
 on:
   workflow_dispatch:
   push:
-    tags:
-      - "[0-9]+.[0-9]+.[0-9]+*"
+    # tags:
+    #   - "[0-9]+.[0-9]+.[0-9]+*"
 
 # Global version
 env:
@@ -16,7 +16,7 @@ jobs:
   arduino-samd-package:
     runs-on: ubuntu-latest
     env:
-      BUILD: "${{ github.repository_owner }}-samd-ard-${{ env.VERSION }}"
+      BUILD: "${{ github.repository_owner }}-samd-ard"
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
