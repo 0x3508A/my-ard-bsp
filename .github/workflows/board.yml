@@ -9,8 +9,9 @@ on:
 
 # Global version
 env:
-  VERSION: ${{ github.ref_name }}
-  REPOURI: ${{ github.server_url }}/${{ github.repository }}
+  VERSION: ${{ github.ref_name }}-${{ github.run_id }}
+  REPO_URI: ${{ github.server_url }}/${{ github.repository }}
+
 jobs:
   arduino-samd-package:
     runs-on: ubuntu-latest
@@ -21,4 +22,4 @@ jobs:
 
       - name: Debug
         run: |
-          ls -alhF
+          ls -alhF .github/workflows
