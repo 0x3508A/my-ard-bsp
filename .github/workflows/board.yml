@@ -17,6 +17,7 @@ jobs:
     env:
       BUILD: "${{ github.repository_owner }}-samd-ard-${{ github.ref_name }}"
       ARCHIVE: ${{ github.repository_owner }}-samd-ard-${{ github.ref_name }}.tar.bz2
+      PACKAGE-INDEX: 0
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
