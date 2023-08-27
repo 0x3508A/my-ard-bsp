@@ -21,4 +21,4 @@ jobs:
 
       - name: Debug
         run: |
-          echo "$REPOURI"
+          ls -alhF
