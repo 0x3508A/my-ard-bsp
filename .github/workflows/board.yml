@@ -10,6 +10,7 @@ on:
 # Global version
 env:
   VERSION: ${{ github.ref_name }}
+  REPOURI: ${{ github.server_url }}/${{ github.repository }}
 jobs:
   arduino-samd-package:
     runs-on: ubuntu-latest
@@ -20,4 +21,4 @@ jobs:
 
       - name: Debug
         run: |
-          echo "${{ github.server_url }}/${{ github.repository }}"
+          echo "$REPOURI"
