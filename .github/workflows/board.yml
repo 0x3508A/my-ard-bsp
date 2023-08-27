@@ -16,6 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       BUILD: "${{ github.repository_owner }}-samd-ard-${{ github.ref_name }}"
+      ARCHIVE: ${{ github.repository_owner }}-samd-ard-${{ github.ref_name }}.tar.bz2
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -23,6 +24,63 @@ jobs:
           repository: arduino/ArduinoCore-samd
           path: ${{ env.BUILD }}
 
-      - name: Debug
+      - name: Get to Latest Tag
         run: |
-          ls -alhF
+          cd ${{ env.BUILD }}
+          git fetch --tags
+          git checkout $(git describe --tags $(git rev-list --tags --max-count=1))
+
+      - name: Checkout ArduinoCore-API
+        uses: actions/checkout@v3
+        with:
+          repository: arduino/ArduinoCore-API
+          path: ArduinoCore-API
+
+      - name: Get to the Latest API Core version & Copy to SAMD Core
+        run: |
+          cd ArduinoCore-API
+          git fetch --tags
+          git checkout $(git describe --tags $(git rev-list --tags --max-count=1))
+          mv api "../${{ env.BUILD }}/cores/arduino/"
+          cd ..
+          rm -rf ArduinoCore-API
+
+      - name: Prepare for Mixin
+        run: |
+          cd ${{ env.BUILD }}
+          rm -rf .git .github LICENSE variants bootloaders drivers post_install.bat
+          cd ..
+
+      - name: Create Archive
+        id: arch
+        run: |
+          tar --exclude=extras/** --exclude=.git* --exclude=.idea \
+            -cjf ${{ env.ARCHIVE }} ${{ env.BUILD }}
+          CHKSUM=$(sha256sum "${{ env.ARCHIVE }}" | awk '{ print $1 }')
+          SIZE=$(wc -c "${{ env.ARCHIVE }}" | awk '{ print $1 }')
+          # Export Variables
+          echo "CHKSUM=${CHKSUM}" >> "$GITHUB_ENV"
+          echo "CHKSUM=${CHKSUM}" >> "$GITHUB_OUTPUT"
+          echo "SIZE=${SIZE}" >> "$GITHUB_ENV"
+          echo "SIZE=${SIZE}" >> "$GITHUB_OUTPUT"
+          echo
+          echo "   --- Checksum for ${{ env.ARCHIVE }} = ${CHKSUM}"
+          echo "   --- Size for ${{ env.ARCHIVE }}     = ${SIZE} bytes"
+          echo
+
+      - name: Prepare artifacts
+        run: |
+          mkdir artifacts
+          mv ${{ env.ARCHIVE }} artifacts/
+          rm -rf ${{ env.BUILD }}
+          echo
+          echo "   --- Checksum for ${{ env.ARCHIVE }} = ${{ env.CHKSUM }}"
+          echo "   --- Size for ${{ env.ARCHIVE }}     = ${{ env. SIZE }} bytes"
+          echo
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: Archive
+          path: ${{ github.workspace }}/artifacts/**/*
+          retention-days: 5
