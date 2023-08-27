@@ -1,0 +1,21 @@
+name: "Multi-Board-Builder"
+
+## Trigger
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "[0-9]+.[0-9]+.[0-9]+*"
+
+# Global version
+env:
+  VERSION: ${{ github.ref_name }}
+jobs:
+  arduino-samd-package:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      
