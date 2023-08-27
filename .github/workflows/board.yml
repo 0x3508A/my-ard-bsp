@@ -21,6 +21,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+      
+      - name: Checkout Arduino Core SAMD
+        uses: actions/checkout@v3
         with:
           repository: arduino/ArduinoCore-samd
           path: ${{ env.BUILD }}
@@ -49,7 +52,7 @@ jobs:
       - name: Prepare for Mixin
         run: |
           cd ${{ env.BUILD }}
-          rm -rf .git .github LICENSE variants bootloaders drivers post_install.bat
+          rm -rf .git .github LICENSE variants bootloaders drivers post_install.bat README.md
           cd ..
 
       - name: Create Archive
